@@ -38,4 +38,3 @@ jobs:
           --head ${{ github.ref_name }} \
           --title "Auto PR: ${{ github.ref_name }}" \
           --body "New PR created for feature branch ${{ github.ref_name }}." \
-          --label "auto-pr" \
