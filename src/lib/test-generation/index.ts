@@ -1,3 +1,3 @@
-export * from "./TestGenerationService";
-export * from "./useTestGeneration";
-export * from "./TestGenerationPanel";
+export * from "./components/TestGeneration/TestGenerationService";
+export * from "./components/TestGeneration/useTestGeneration";
+export * from "./components/TestGeneration/TestGenerationPanel";

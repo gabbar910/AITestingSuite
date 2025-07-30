@@ -1,6 +1,6 @@
-import { GenerationConfig, GenerationResult } from "./engine/types";
-import { AITestEngine } from "./engine/AITestEngine";
-import { AITestEngineFactory } from "./engine/AITestEngineFactory";
+import { GenerationConfig, GenerationResult } from "../../engine/types";
+import { AITestEngine } from "../../engine/AITestEngine";
+import { AITestEngineFactory } from "../../engine/AITestEngineFactory";
 
 export class TestGenerationService {
   private engine: AITestEngine | null = null;

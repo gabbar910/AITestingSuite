@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { TestGenerationService } from "./TestGenerationService";
-import { GenerationConfig, GenerationResult } from "./engine/types";
+import { GenerationConfig, GenerationResult } from "../../engine/types";
 
 
 export interface UseTestGenerationReturn {
