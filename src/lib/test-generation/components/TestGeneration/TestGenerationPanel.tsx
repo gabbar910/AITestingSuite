@@ -125,6 +125,15 @@ export const TestGenerationPanel: React.FC = () => {
     setIsGenerating(false);
   };
 
+  // Toggle scenario selection
+  const toggleScenarioSelection = (scenarioId: string) => {
+    setSelectedScenarios(prev => 
+      prev.includes(scenarioId) 
+        ? prev.filter(id => id !== scenarioId)
+        : [...prev, scenarioId]
+    );
+  };
+
   return (
     <React.Fragment>
       <div className="flex items-center justify-between">
