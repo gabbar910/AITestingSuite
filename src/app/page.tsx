@@ -5,6 +5,7 @@ import { Play, Brain, FileText, BarChart3, Settings, Plus, CheckCircle, AlertCir
 import { TestGenerationPanel } from '../lib/test-generation/components/TestGeneration/TestGenerationPanel';
 import { Dashboard } from '../lib/test-generation/components/Dashboard/Dashboard';
 import { TestPlanning } from '../lib/test-generation/components/TestPlanning/TestPlanning';
+import { JiraTasks } from '../lib/test-generation/components/JiraTasks/JiraTasks';
 import { TestExecution } from '../lib/test-generation/components/TestExecution/TestExecution';
 import { CiCd } from '../lib/test-generation/components/CiCd/CiCd';
 import { TestReports } from '../lib/test-generation/components/TestReports/TestReports';
@@ -44,6 +45,7 @@ export default function TestingSuite() {
           <div className="p-4 space-y-2">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+              { id: 'jiratasks', label: 'Jira Tasks', icon:Download  },
               { id: 'planning', label: 'Test Planning', icon: FileText },
               { id: 'generation', label: 'AI Generation', icon: Brain },
               { id: 'execution', label: 'Test Execution', icon: Play },
@@ -71,6 +73,12 @@ export default function TestingSuite() {
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               <Dashboard />
+            </div>
+          )}
+
+          {activeTab === 'jiratasks' && (
+            <div className="space-y-6">
+              <JiraTasks />
             </div>
           )}
 
