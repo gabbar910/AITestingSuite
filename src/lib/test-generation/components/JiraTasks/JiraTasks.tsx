@@ -1,53 +1,65 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Brain, Search, Loader2, AlertCircle } from 'lucide-react';
-import styles from './JiraTasks.module.css';
+import React, { useState } from "react";
+import { Brain, Search, Loader2, AlertCircle } from "lucide-react";
+import styles from "./JiraTasks.module.css";
 
 interface JiraIssue {
   key: string;
   fields: {
     summary: string;
-    description: string;
+    description?: string;
     status: { name: string };
     assignee?: { displayName: string };
   };
 }
 
 export const JiraTasks: React.FC = () => {
-  const [jiraUrl, setJiraUrl] = useState('');
-  const [token, setToken] = useState('');
-  const [label, setLabel] = useState('feature');
+  const [jiraUrl, setJiraUrl] = useState("");
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [label, setLabel] = useState("feature");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [issues, setIssues] = useState<JiraIssue[]>([]);
 
   const handleFetch = async () => {
     setLoading(true);
-    setError('');
-    
+    setError("");
+    setIssues([]);
+
     try {
-      const response = await fetch('/api/jira', {
-        method: 'POST',
+      const response = await fetch("/api/jira", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ jiraUrl, token, label }),
+        body: JSON.stringify({
+          jiraUrl,
+          token,
+          label,
+          email,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch Jira tasks');
+        const errText = await response.text();
+        throw new Error(`Failed to fetch Jira tasks: ${errText}`);
       }
 
       const data = await response.json();
       setIssues(data.issues || []);
     } catch (err) {
-      setError('Failed to fetch tasks. Please check your configuration.');
-      console.error('Jira fetch error:', err);
+      console.error("Jira fetch error:", err);
+      setError(
+        "Failed to fetch tasks. Please check your Jira URL, email, token, or network connection."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  const isFetchDisabled = !jiraUrl || !email || !token || loading;
 
   return (
     <div className="space-y-6">
@@ -57,8 +69,9 @@ export const JiraTasks: React.FC = () => {
           <Brain className="w-5 h-5 text-purple-400" />
           <span>Jira Configuration</span>
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Jira URL */}
           <div>
             <label className="block text-sm text-gray-300 mb-2">Jira URL</label>
             <input
@@ -69,9 +82,26 @@ export const JiraTasks: React.FC = () => {
               className="w-full p-3 bg-purple-900/10 border border-purple-800/30 rounded-lg text-white placeholder-gray-400"
             />
           </div>
-          
+
+          {/* Email */}
           <div>
-            <label className="block text-sm text-gray-300 mb-2">API Token</label>
+            <label className="block text-sm text-gray-300 mb-2">
+              Jira Account Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your-email@domain.com"
+              className="w-full p-3 bg-purple-900/10 border border-purple-800/30 rounded-lg text-white placeholder-gray-400"
+            />
+          </div>
+
+          {/* Token */}
+          <div>
+            <label className="block text-sm text-gray-300 mb-2">
+              API Token
+            </label>
             <input
               type="password"
               value={token}
@@ -80,9 +110,12 @@ export const JiraTasks: React.FC = () => {
               className="w-full p-3 bg-purple-900/10 border border-purple-800/30 rounded-lg text-white placeholder-gray-400"
             />
           </div>
-          
+
+          {/* Label */}
           <div>
-            <label className="block text-sm text-gray-300 mb-2">Feature Label</label>
+            <label className="block text-sm text-gray-300 mb-2">
+              Feature Label
+            </label>
             <input
               type="text"
               value={label}
@@ -92,11 +125,11 @@ export const JiraTasks: React.FC = () => {
             />
           </div>
         </div>
-        
+
         <div className="mt-6 flex justify-end">
           <button
             onClick={handleFetch}
-            disabled={loading || !jiraUrl || !token}
+            disabled={isFetchDisabled}
             className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition-all flex items-center space-x-2 disabled:opacity-50"
           >
             {loading ? (
@@ -129,22 +162,29 @@ export const JiraTasks: React.FC = () => {
             <Search className="w-5 h-5 text-blue-400" />
             <span>Found {issues.length} Tasks</span>
           </h3>
-          
+
           <div className="space-y-4">
             {issues.map((issue, index) => (
-              <div key={index} className="border rounded-lg transition-all bg-purple-900/10 border-purple-800/20 hover:border-purple-700/40">
+              <div
+                key={index}
+                className="border rounded-lg transition-all bg-purple-900/10 border-purple-800/20 hover:border-purple-700/40"
+              >
                 <div className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <span className="text-blue-400 font-mono">{issue.key}</span>
+                        <span className="text-blue-400 font-mono">
+                          {issue.key}
+                        </span>
                         <span className="text-xs px-2 py-1 rounded-full bg-green-900/30 text-green-300">
                           {issue.fields.status.name}
                         </span>
                       </div>
-                      
-                      <h4 className="font-medium text-white mb-1">{issue.fields.summary}</h4>
-                      
+
+                      <h4 className="font-medium text-white mb-1">
+                        {issue.fields.summary}
+                      </h4>
+
                       {issue.fields.assignee && (
                         <div className="text-sm text-gray-400">
                           Assignee: {issue.fields.assignee.displayName}
